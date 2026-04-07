@@ -1,0 +1,47 @@
+# OpenEnv Specification for Sustainable Data Center Environment
+
+version: "1.0.0"
+name: "sustainable-data-center"
+description: "Optimize power, cooling, and carbon footprint of a large-scale data center."
+
+observation_space:
+  type: "object"
+  properties:
+    step: { type: "integer", description: "Current simulation step" }
+    it_load_kw: { type: "number", description: "Current IT power demand in kW" }
+    ambient_temp_c: { type: "number", description: "Outside air temperature" }
+    internal_temp_c: { type: "number", description: "Current data center internal temperature" }
+    grid_carbon_intensity: { type: "number", description: "gCO2/kWh from the power grid" }
+    solar_output_kw: { type: "number", description: "Current solar power generation" }
+    battery_soc: { type: "number", description: "Battery State of Charge (0.0 to 1.0)" }
+    cooling_power_kw: { type: "number", description: "Power consumed by cooling systems" }
+    total_cost: { type: "number", description: "Cumulative cost incurred" }
+    total_carbon: { type: "number", description: "Cumulative carbon emissions" }
+    done: { type: "boolean", description: "Whether the episode is finished" }
+    task_id: { type: "string", description: "ID of the current task" }
+
+action_space:
+  type: "object"
+  properties:
+    cooling_setpoint: { type: "number", minimum: 18, maximum: 27, description: "Target internal temperature" }
+    battery_charge_rate: { type: "number", minimum: -1.0, maximum: 1.0, description: "Charge (>0) or Discharge (<0) rate" }
+    it_load_shift: { type: "number", minimum: -0.2, maximum: 0.2, description: "Shift non-critical load (-20% to +20%)" }
+
+tasks:
+  - id: "steady-state-efficiency"
+    name: "Steady State Efficiency"
+    difficulty: "easy"
+    description: "Stable environment with constant 22°C ambient temp and 500kW IT load. Goal: Maintain safe internal temp with minimal cooling power."
+    max_steps: 100
+  
+  - id: "renewable-integration"
+    name: "Renewable Integration"
+    difficulty: "medium"
+    description: "Variable solar (400kW peak) and pricing ($0.10-$0.30/kWh). Goal: Use 500kWh battery to shift load and maximize renewable usage."
+    max_steps: 288 # 24 hours
+  
+  - id: "extreme-weather-optimization"
+    name: "Extreme Weather Optimization"
+    difficulty: "hard"
+    description: "Extreme heat (up to 44°C) and high variable load (up to 1000kW). Goal: Prevent thermal shutdown while minimizing carbon impact."
+    max_steps: 500
