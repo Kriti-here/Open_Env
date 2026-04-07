@@ -8,6 +8,8 @@ const __dirname = path.dirname(__filename);
 
 async function startServer() {
   const app = express();
+  // Add this line
+  app.use(express.static(path.join(__dirname, 'dist')));
   const PORT = process.env.PORT || 7860;;
 
   app.use(express.json());
@@ -247,6 +249,10 @@ async function startServer() {
 
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);
+  });
+  // Add this at the end of your routes, but before app.listen
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
   });
 }
 
