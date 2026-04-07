@@ -1,5 +1,0 @@
-{
-  "name": "OpenEnv: AI Data Center Controller",
-  "description": "An advanced AI-powered Digital Twin and Controller for the OpenEnv Data Center Thermal Management framework. Features Gemini-driven predictive cooling, real-time telemetry, and BESS management for the SST challenge.",
-  "requestFramePermissions": []
-}

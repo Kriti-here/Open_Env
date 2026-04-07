@@ -1,5 +1,0 @@
-openenv-core
-numpy
-pandas
-matplotlib
-google-generativeai
