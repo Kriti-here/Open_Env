@@ -6,4 +6,4 @@ COPY . .
 RUN npm run build
 EXPOSE 7860
 ENV PORT=7860
-CMD ["npm", "run", "start"]
+CMD ["npx", "tsx", "server.ts"]
