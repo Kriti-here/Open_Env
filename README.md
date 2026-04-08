@@ -45,5 +45,4 @@ docker run -p 7860:7860 openenv-app
 The controller uses a **Predictive Cooling** strategy. It forecasts ambient spikes 1-3 hours in advance and triggers pre-cooling cycles to maintain thermal safety while minimizing PUE and Carbon footprint.
 
 ---
-**Submission Deadline**: 8th April 11:59 PM
 **Developer**: kritii1977@gmail.com
