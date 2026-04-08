@@ -34,7 +34,7 @@ import {
   Loader2,
   Cpu
 } from 'lucide-react';
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 
 interface EnvState {
   step: number;
@@ -49,6 +49,7 @@ interface EnvState {
   total_carbon: number;
   done: boolean;
   task_id: string;
+  forecast?: any[];
 }
 
 export default function App() {
@@ -131,6 +132,27 @@ export default function App() {
         contents: prompt,
         config: {
           responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              forecast: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    time: { type: Type.STRING },
+                    ambient: { type: Type.NUMBER },
+                    internal: { type: Type.NUMBER },
+                    recommendation: { type: Type.STRING }
+                  },
+                  required: ["time", "ambient", "internal", "recommendation"]
+                }
+              },
+              suggested_setpoint: { type: Type.NUMBER },
+              suggested_load_shift: { type: Type.NUMBER }
+            },
+            required: ["forecast", "suggested_setpoint", "suggested_load_shift"]
+          }
         }
       });
 
@@ -253,6 +275,12 @@ export default function App() {
     return () => clearInterval(interval);
   }, [autoStep, state, stepEnv]);
 
+  useEffect(() => {
+    if (isPredictiveCooling && state && !state.done && lastForecastStep === -100) {
+      getAIForecast(state);
+    }
+  }, [isPredictiveCooling, state, getAIForecast, lastForecastStep]);
+
   const processMessage = async (text: string) => {
     if (!text.trim() || isChatLoading) return;
 
@@ -269,7 +297,7 @@ export default function App() {
       Simulation Details:
       - Thermal Dynamics: Heat from IT load and ambient environment vs cooling power. Target temp: 22-25°C.
       - Energy: 500kW solar array, 500kWh battery (150kW charge/discharge).
-      - Reward Function: 50% Thermal Safety, 30% Carbon Minimization, 20% Cost Efficiency.
+      - Reward Function: 40% Thermal Safety, 30% Carbon Minimization, 30% Cost Efficiency.
       - Tasks: Steady State (Easy), Renewable Integration (Medium), Heatwave (Hard).
       - Controls: Cooling Setpoint, Battery Charge Rate, IT Load Shift.
       Current State: ${JSON.stringify(state)}
@@ -706,7 +734,7 @@ export default function App() {
               </div>
 
               {/* AI Forecast Section */}
-              {state.forecast && state.forecast.length > 0 && (
+              {aiForecast && aiForecast.length > 0 && (
                 <div className="mt-8 pt-8 border-t border-slate-800">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-sm font-bold flex items-center gap-2 text-blue-400">
@@ -716,7 +744,7 @@ export default function App() {
                     <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest bg-slate-800 px-2 py-0.5 rounded">Gemini 1.5 Flash</span>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                    {state.forecast.map((f, i) => (
+                    {aiForecast.map((f, i) => (
                       <div key={i} className="bg-slate-800/30 border border-slate-700/50 p-3 rounded-xl space-y-2">
                         <p className="text-[10px] font-bold text-slate-400">{f.time}</p>
                         <div className="space-y-1">
@@ -833,16 +861,24 @@ export default function App() {
                   <Wind size={20} className="text-emerald-500" />
                   Controls
                 </h2>
-                <button 
-                  onClick={() => setIsPredictiveCooling(!isPredictiveCooling)}
-                  className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all border ${
-                    isPredictiveCooling 
-                    ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-500' 
-                    : 'bg-slate-800 border-slate-700 text-slate-500'
-                  }`}
-                >
-                  {isPredictiveCooling ? 'Predictive' : 'Manual'}
-                </button>
+                <div className="flex items-center gap-3">
+                  {isForecasting && (
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-blue-400 animate-pulse">
+                      <Loader2 size={12} className="animate-spin" />
+                      AI Thinking
+                    </div>
+                  )}
+                  <button 
+                    onClick={() => setIsPredictiveCooling(!isPredictiveCooling)}
+                    className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all border ${
+                      isPredictiveCooling 
+                      ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-500' 
+                      : 'bg-slate-800 border-slate-700 text-slate-500'
+                    }`}
+                  >
+                    {isPredictiveCooling ? 'Predictive' : 'Manual'}
+                  </button>
+                </div>
               </div>
               <div className="space-y-6">
                 {isPredictiveCooling && (

@@ -8,9 +8,7 @@ const __dirname = path.dirname(__filename);
 
 async function startServer() {
   const app = express();
-  // Add this line
-  app.use(express.static(path.join(__dirname, 'dist')));
-  const PORT = process.env.PORT || 7860;;
+  const PORT = 3000;
 
   app.use(express.json());
 
@@ -180,19 +178,19 @@ async function startServer() {
     pueCount++;
 
     // 6. CLEAR + BALANCED REWARD FUNCTION
-    // Thermal Score: 1.0 if safe (<25), drops to 0.0 at 32
-    const thermalScore = Math.max(0, Math.min(1, 1 - Math.max(0, state.internal_temp_c - 25) / 7));
+    // Thermal Score: 1.0 if safe (<27), drops to 0.0 at 35
+    const thermalScore = Math.max(0, Math.min(1, 1 - Math.max(0, state.internal_temp_c - 27) / 8));
     
-    // Carbon Score: Normalized against a "bad" baseline (e.g., 20kg/step)
-    const carbonScore = Math.max(0, 1 - stepCarbon / 20);
+    // Carbon Score: Normalized against a "bad" baseline (e.g., 60kg/step)
+    const carbonScore = Math.max(0, 1 - stepCarbon / 60);
     
-    // Cost Score: Normalized against a "bad" baseline (e.g., $10/step)
-    const costScore = Math.max(0, 1 - stepCost / 10);
+    // Cost Score: Normalized against a "bad" baseline (e.g., $30/step)
+    const costScore = Math.max(0, 1 - stepCost / 30);
 
     // Weighted Reward (Sum = 1.0)
-    const w_thermal = 0.5; // Safety first
+    const w_thermal = 0.4; // Safety first
     const w_carbon = 0.3;
-    const w_cost = 0.2;
+    const w_cost = 0.3;
     
     const reward = (w_thermal * thermalScore) + (w_carbon * carbonScore) + (w_cost * costScore);
 
@@ -249,10 +247,6 @@ async function startServer() {
 
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);
-  });
-  // Add this at the end of your routes, but before app.listen
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
   });
 }
 
