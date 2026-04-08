@@ -1,0 +1,13 @@
+Metadata-Version: 2.4
+Name: openenv-submission
+Version: 1.0.0
+Summary: OpenEnv Submission for App
+Author-email: Developer <kritii1977@gmail.com>
+Requires-Dist: openenv-core
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: matplotlib
+Requires-Dist: google-generativeai
+Requires-Dist: openai
+Requires-Dist: requests
+Requires-Dist: pydantic

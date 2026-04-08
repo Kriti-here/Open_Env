@@ -1,0 +1,21 @@
+[project]
+name = "openenv-submission"
+version = "1.0.0"
+description = "OpenEnv Submission for App"
+authors = [
+    { name = "Developer", email = "kritii1977@gmail.com" }
+]
+dependencies = [
+    "openenv-core",
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "google-generativeai",
+    "openai",
+    "requests",
+    "pydantic"
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"

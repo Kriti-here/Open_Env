@@ -5,4 +5,21 @@ coverage/
 .DS_Store
 *.log
 .env*
+.env.local
 !.env.example
+
+# Python / Data Science
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+.venv-*/
+env/
+venv/
+ENV/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# IDE / Editor
+.vscode/
+.idea/

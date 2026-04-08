@@ -41,7 +41,10 @@ def run_inference(task_id: str):
     
     # Reset environment
     response = requests.post(f"{ENV_URL}/reset", json={"task_id": task_id})
-    state_data = response.json()
+    result_data = response.json()
+    
+    # Extract observation whether it's wrapped or direct
+    state_data = result_data.get("observation", result_data) if isinstance(result_data, dict) else result_data
     state = Observation(**state_data)
     
     total_reward = 0

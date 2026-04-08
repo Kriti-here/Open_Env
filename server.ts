@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
   app.use(express.json());
 
@@ -82,7 +82,22 @@ async function startServer() {
     };
     pueSum = 0;
     pueCount = 0;
-    return state;
+    
+    // Explicitly construct the exact Observation object to avoid extra fields
+    return {
+      step: state.step,
+      it_load_kw: state.it_load_kw,
+      ambient_temp_c: state.ambient_temp_c,
+      internal_temp_c: state.internal_temp_c,
+      grid_carbon_intensity: state.grid_carbon_intensity,
+      solar_output_kw: state.solar_output_kw,
+      battery_soc: state.battery_soc,
+      cooling_power_kw: state.cooling_power_kw,
+      total_cost: state.total_cost,
+      total_carbon: state.total_carbon,
+      done: state.done,
+      task_id: state.task_id
+    };
   };
 
   // OpenEnv Endpoints
@@ -93,7 +108,7 @@ async function startServer() {
   app.post("/reset", (req, res) => {
     const { task_id } = req.body;
     const newState = resetEnv(task_id);
-    res.json(newState);
+    res.json({ observation: newState, info: {} });
   });
 
   app.post("/step", (req, res) => {
@@ -214,10 +229,24 @@ async function startServer() {
     }
 
     res.json({
-      observation: { ...state, forecast: currentForecast },
+      observation: {
+        step: state.step,
+        it_load_kw: state.it_load_kw,
+        ambient_temp_c: state.ambient_temp_c,
+        internal_temp_c: state.internal_temp_c,
+        grid_carbon_intensity: state.grid_carbon_intensity,
+        solar_output_kw: state.solar_output_kw,
+        battery_soc: state.battery_soc,
+        cooling_power_kw: state.cooling_power_kw,
+        total_cost: state.total_cost,
+        total_carbon: state.total_carbon,
+        done: state.done,
+        task_id: state.task_id
+      },
       reward: Math.max(0, Math.min(1, reward)),
       done: state.done,
       info: {
+        forecast: currentForecast,
         thermal_score: thermalScore,
         carbon_score: carbonScore,
         cost_score: costScore
