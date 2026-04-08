@@ -12,6 +12,8 @@ coverage/
 __pycache__/
 *.py[cod]
 *$py.class
+*.egg-info/
+*.egg
 .venv/
 .venv-*/
 env/
