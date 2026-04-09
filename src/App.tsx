@@ -128,7 +128,7 @@ export default function App() {
       `;
 
       const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
+        model: "gemini-1.5-flash",
         contents: prompt,
         config: {
           responseMimeType: "application/json",
@@ -199,7 +199,7 @@ export default function App() {
         body: JSON.stringify({ task_id: id })
       });
       const data = await res.json();
-      setState(data);
+      setState(data.observation || data);
       setTaskId(id);
       setLastReward(null);
       setTelemetryHistory([]);
@@ -291,7 +291,7 @@ export default function App() {
 
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
-      const model = "gemini-3-flash-preview";
+      const model = "gemini-1.5-flash";
       
       const systemInstruction = `You are the OpenEnv Data Center Assistant. You help users understand the data center simulation, its controls, and the AI's decision-making process.
       Simulation Details:
